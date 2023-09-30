@@ -1,12 +1,15 @@
 import { existsSync, promises } from "fs";
-import { productsManager } from "./ProductsManager.js";
+import { manager } from "./ProductsManager.js";
 const path = "carts.json";
 
 class CartsManager {
+  constructor(path) {
+    this.path = path;
+  }
   async getCarts() {
     try {
       if (existsSync(path)) {
-        const cartsFile = await promises.readFile(path, "utf-8");
+        const cartsFile = await promises.readFile(this.path, "utf-8");
         const cartsData = JSON.parse(cartsFile);
         return cartsData;
       } else {
@@ -29,8 +32,9 @@ class CartsManager {
         id = carts[carts.length - 1].id + 1;
       }
       const newCart = { id, products: [] };
+
       carts.push(newCart);
-      await promises.writeFile(path, JSON.stringify(carts));
+      await promises.writeFile(this.path, JSON.stringify(carts));
       return newCart;
     } catch (error) {
       return error;
@@ -55,8 +59,8 @@ class CartsManager {
     if (!cart) {
       throw new Error("There is no cart with this id");
     }
-    // validar producto exista
-    const product = await productsManager.getProductById(idProduct);
+
+    const product = await manager.getProductById(idProduct);
     if (!product) {
       throw new Error("There is no product with this id");
     }

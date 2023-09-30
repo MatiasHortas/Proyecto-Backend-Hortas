@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { manager } from "./../ProductsManager.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
@@ -26,8 +26,26 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, description, price, thumbnail, stock, code } = req.body;
-  if (!title || !description || !price || !thumbnail || !stock || !code)
+  const {
+    title,
+    description,
+    price,
+    thumbnail,
+    stock,
+    code,
+    status,
+    category,
+  } = req.body;
+  if (
+    !title ||
+    !description ||
+    !price ||
+    !thumbnail ||
+    !stock ||
+    !code ||
+    !status ||
+    !category
+  )
     return res.status(400).json({ message: "some data is missing" });
   const products = await manager.getProducts({});
   const isCodeRepeat = products.some((product) => product.code === code);
@@ -67,9 +85,6 @@ router.put("/:idProduct", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
-router.listen(8080, () => {
-  console.log("funciona express amigo");
 });
 
 export default router;
