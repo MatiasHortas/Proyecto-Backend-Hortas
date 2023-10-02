@@ -73,6 +73,10 @@ class CartsManager {
     } else {
       cart.products[productIndex].quantity++;
     }
+    const carts = await this.getCarts();
+    const cartIndex = carts.findIndex((cart) => cart.id === idCart);
+    carts[cartIndex] = cart;
+    await promises.writeFile(path, JSON.stringify(carts));
   }
 }
 

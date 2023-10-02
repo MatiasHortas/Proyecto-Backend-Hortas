@@ -2,9 +2,9 @@ import { Router } from "express";
 import { cartsManager } from "./../CartsManager.js";
 const router = Router();
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const newCart = cartsManager.createCart();
+    const newCart = await cartsManager.createCart();
     res.status(201).json({ message: "Carrito creado", cart: newCart });
   } catch (error) {
     res.status(500).json({ message: error.message });
