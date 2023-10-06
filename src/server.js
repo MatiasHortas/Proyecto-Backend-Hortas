@@ -5,6 +5,7 @@ import viewsRouter from "./routes/views.router.js";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
+import { manager } from "./ProductsManager.js";
 const app = express();
 
 app.use(express.json());
@@ -28,8 +29,20 @@ const httpServer = app.listen(8080, () => {
 
 const socketServer = new Server(httpServer);
 
-socketServer.on("connection", (socket) => {
-  socket.on("listaProducto", (value) => {
-    socketServer.emit("producto", value);
+socketServer.on("connection", async (socket) => {
+  console.log(`Cliente conectado ${socket.id}`);
+  const products = await manager.getProducts({});
+  socket.emit("products", products);
+
+  socket.on("addProduct", async (productsData) => {
+    console.log(productsData);
+    await manager.addProduct(productsData);
+    const productsUpdated = await manager.getProducts({});
+    socket.emit("productsUpdated", productsUpdated);
+  });
+
+  socket.on("id", async (id) => {
+    await manager.deleteProduct(+id);
+    socket.emit("productsUpdated", products);
   });
 });

@@ -42,29 +42,25 @@
     placeholder="Codigo del producto"
     required
   />
-  <input
-    type="text"
-    name="category"
-    id="category"
-    placeholder="Categoria del producto"
-    required
-  />
 
   <input type="submit" value="ENVIAR" />
 </form>
-<ul id="listaProducto">
 
-  {{#each listaProducto}}
-    <p id="titleP">Titulo: {{this.tittle}}</p>
-    <p>Descripcion: {{this.desc}}</p>
-    <p>Precio: {{this.price}}</p>
-    <p>Link: {{this.thumbnail}}</p>
-    <p>Stock: {{this.stock}}</p>
-    <p>Codigo: {{this.code}}</p>
-    <p>Categoria: {{this.category}}</p>
-  {{/each}}
+<form id="form__delete">
+  <label for="">Que Producto quieres eliminar?</label>
+  <input
+    type="number"
+    name="numberDelete"
+    id="numberDelete"
+    placeholder="Ingresar id para borrar"
+  />
+  <input type="submit" value="Borrar" />
 
-</ul>
+</form>
+
+<div id="listaProducto">
+
+</div>
 
 <script src="/socket.io/socket.io.js"></script>;
 <script src="/js/index.js"></script>

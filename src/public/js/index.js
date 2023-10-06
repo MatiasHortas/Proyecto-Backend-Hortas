@@ -2,7 +2,10 @@ console.log("probando web socket");
 const socketClient = io();
 
 const form = document.getElementById("form");
-const listaProductosUl = document.getElementById("listaProducto");
+const listaProductos = document.getElementById("listaProducto");
+
+const formBorrar = document.getElementById("form__delete");
+const inputBorrar = document.getElementById("numberDelete");
 
 const tituloProducto = document.getElementById("tittle");
 const DescProducto = document.getElementById("desc");
@@ -12,47 +15,48 @@ const stockProducto = document.getElementById("stock");
 const codigoProducto = document.getElementById("code");
 const categoriaProducto = document.getElementById("category");
 const parrafoP = document.getElementById("titleP");
-// let productId = 1;
-// const listaProducto = [];
+
+socketClient.on("products", (products) => {
+  productsUpdate(products);
+});
+socketClient.on("productsUpdated", (productsUpdated) => {
+  productsUpdate(productsUpdated);
+  form.reset();
+});
+
+const productsUpdate = (products) => {
+  let productsHtml = "";
+  products.forEach((product) => {
+    productsHtml += `
+  <p>Id:${product.id}</p>
+  <p>Producto:${product.title}</p>
+  <p>Descripcion:${product.description}</p>
+  <p>Precio:${product.price}</p>
+  <p>${product.thumbnail}</p>
+  <p>Stock:${product.stock}</p>
+  <p>Codigo:${product.code}</p>
+
+  `;
+  });
+
+  listaProductos.innerHTML = productsHtml;
+};
 form.onsubmit = (e) => {
   e.preventDefault();
   const producto = {
-    // id: productId++,
-    tituloProducto: tituloProducto.value,
-    DescProducto: DescProducto.value,
-    precioProducto: precioProducto.value,
-    linkProducto: linkProducto.value,
-    stockProducto: stockProducto.value,
-    codigoProducto: codigoProducto.value,
-    categoriaProducto: categoriaProducto.value,
+    title: tituloProducto.value,
+    description: DescProducto.value,
+    price: precioProducto.value,
+    thumbnail: linkProducto.value,
+    stock: stockProducto.value,
+    code: codigoProducto.value,
   };
-  //   listaProducto.push(producto);
-
-  socketClient.emit("titleP", producto);
-  console.log(producto);
-  socketClient.on("listaProducto", (producto) => {
-    producto.innerText = parrafoP;
-  });
+  socketClient.emit("addProduct", producto);
 };
 
-// socketClient.on("listaProducto", (producto) => {
-//   const li = document.createElement("li");
-//   li.innerHTML = `
-//   <strong>Id:</strong> ${producto.id}<br>
-//     <strong>Titulo:</strong> ${producto.tituloProducto}<br>
-//     <strong>Descripcion:</strong> ${producto.DescProducto}<br>
-//     <strong>Precio:</strong> ${producto.precioProducto}<br>
-//     <strong>Link:</strong> ${producto.linkProducto}<br>
-//     <strong>Stock:</strong> ${producto.stockProducto}<br>
-//     <strong>Codigo:</strong> ${producto.codigoProducto}<br>
-//     <strong>Categoria:</strong> ${producto.categoriaProducto}<br
-
-//   `;
-
-//   // Agrega el nuevo elemento li al elemento ul
-//   listaProductosUl.appendChild(li);
-// });
-
-// socketClient.on("welcome", (mensaje) => {
-//   alert(mensaje);
-// });
+formBorrar.onsubmit = (e) => {
+  e.preventDefault();
+  let id;
+  id = inputBorrar.value;
+  socketClient.emit("id", id);
+};
