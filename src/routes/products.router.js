@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { manager } from "./../ProductsManager.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
@@ -25,7 +26,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   const {
     title,
     description,
