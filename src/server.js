@@ -2,10 +2,16 @@ import express from "express";
 import cartsRouter from "./routes/carts.router.js";
 import productsRouter from "./routes/products.router.js";
 import viewsRouter from "./routes/views.router.js";
+import usersRouter from "./routes/users.router.js";
+import products2Router from "./routes/products2.router.js";
+import chatRouter from "./routes/chat.router.js";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import { manager } from "./ProductsManager.js";
+
+//db conecction
+import "./db/configDB.js";
 const app = express();
 
 app.use(express.json());
@@ -22,13 +28,16 @@ app.set("view engine", "handlebars");
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/views", viewsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/products2", products2Router);
+app.use("/api/chat", chatRouter);
 
 const httpServer = app.listen(8080, () => {
   console.log("Funciona el puerto amigo");
 });
 
 const socketServer = new Server(httpServer);
-
+const messages = [];
 socketServer.on("connection", async (socket) => {
   console.log(`Cliente conectado ${socket.id}`);
   const products = await manager.getProducts({});
@@ -44,5 +53,10 @@ socketServer.on("connection", async (socket) => {
   socket.on("id", async (id) => {
     await manager.deleteProduct(+id);
     socket.emit("productsUpdated", products);
+  });
+
+  socket.on("message", (info) => {
+    messages.push(info);
+    socketServer.emit("chat", messages);
   });
 });
