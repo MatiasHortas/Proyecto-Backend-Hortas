@@ -3,13 +3,10 @@ import { cartsManager } from "../managers/cartsManager.js";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
-  try {
-    const cart = await cartsManager.createOne(req.body);
-    res.status(200).json({ message: "Cart created", cart });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+router.get("/:idCart", async (req, res) => {
+  const { idCart } = req.params;
+  const cart = cartsManager.findById(idCart);
+  res.json({ cart });
 });
 
 router.get("/:cid", async (req, res) => {
@@ -25,23 +22,15 @@ router.get("/:cid", async (req, res) => {
   }
 });
 
-router.post("/:cid/product/:pid", async (req, res) => {
-  const { cid, pid } = req.params;
-  try {
-    const response = await cartsManager.createIndexes(cid, pid);
-    res.status(200).json({ message: "Product added", cart: response });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
+router.post("/:idCart/products/:idProduct", async (req, res) => {
+  const { idCart, idProduct } = req.params;
+  const cart = cartsManager.addProductToCart(idCart, idProduct);
+  res.json({ cart });
 });
 
-router.delete("/", async (req, res) => {
-  try {
-    await cartsManager.deteleAll();
-    res.status(200).json({ message: "Products Deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+router.post("/", async (req, res) => {
+  const cart = await cartsManager.createOne();
+  res.json({ cart });
 });
 
 export default router;
