@@ -1,5 +1,6 @@
 import express from "express";
 import cartsRouter from "./routes/carts.router.js";
+import carts2Router from "./routes/carts2.router.js";
 import productsRouter from "./routes/products.router.js";
 import viewsRouter from "./routes/views.router.js";
 import usersRouter from "./routes/users.router.js";
@@ -27,6 +28,7 @@ app.set("view engine", "handlebars");
 
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/api/carts2", carts2Router);
 app.use("/api/views", viewsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/products2", products2Router);
