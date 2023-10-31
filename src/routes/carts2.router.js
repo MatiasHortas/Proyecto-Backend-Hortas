@@ -5,21 +5,13 @@ const router = Router();
 
 router.get("/:idCart", async (req, res) => {
   const { idCart } = req.params;
-  const cart = cartsManager.findById(idCart);
+  const cart = await cartsManager.findById(idCart);
   res.json({ cart });
 });
 
-router.get("/:cid", async (req, res) => {
-  const { cid } = req.params;
-  try {
-    const cart = await cartsManager.findById(cid);
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-    res.status(200).json({ message: "Cart found", cart });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+router.get("/", async (req, res) => {
+  const cart = await cartsManager.findAll();
+  res.json({ cart });
 });
 
 router.post("/:idCart/products/:idProduct", async (req, res) => {

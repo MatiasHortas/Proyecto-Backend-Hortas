@@ -6,7 +6,9 @@ class CartsManager {
     return result;
   }
   async findById(idCart) {
-    const result = await cartsModel.findById(idCart);
+    const result = await cartsModel
+      .findById(idCart)
+      .populate("products.product");
     return result;
   }
   async createOne() {
@@ -17,14 +19,15 @@ class CartsManager {
 
   async addProductToCart(idCart, idProduct) {
     const cart = await cartsModel.findById(idCart);
-    const productIndex = cart.products.findIndex(
-      (p) => p.product === idProduct
+    const productIndex = cart.products.findIndex((p) =>
+      p.product.equals(idProduct)
     );
     if (productIndex === -1) {
       cart.products.push({ product: idProduct, quantity: 1 });
     } else {
       cart.products[productIndex].quantity++;
     }
+
     await cart.save();
   }
 

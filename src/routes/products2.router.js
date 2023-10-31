@@ -11,10 +11,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/idProduct", async (req, res) => {
+router.get("/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
   try {
-    const product = await usersManager1.findById(idProduct);
+    const product = await products2Manager.findById(idProduct);
     res.status(200).json({ message: "Producto", product });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -22,8 +22,8 @@ router.get("/idProduct", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, price } = req.body;
-  if (!name || !price) {
+  const { name, price, description, category, code } = req.body;
+  if (!name || !price || !description || !category || !code) {
     return res.status(400).json({ message: "Some data is missing" });
   }
   try {
@@ -36,11 +36,34 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/idProduct", async (req, res) => {
+router.delete("/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
   try {
     await products2Manager.deleteOne(idProduct);
     res.status(200).json({ message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/:idProduct", async (req, res) => {
+  const { idProduct } = req.params;
+  try {
+    await products2Manager.deleteOne(idProduct);
+    res.status(200).json({ message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/:idProduct", async (req, res) => {
+  const { idProduct } = req.params;
+  try {
+    const productUpdated = await products2Manager.updateOne(
+      idProduct,
+      req.body
+    );
+    res.status(200).json({ message: "Product updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
