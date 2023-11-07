@@ -1,0 +1,30 @@
+* {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+}
+
+#products_container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 300px);
+  grid-gap: 20px;
+}
+#product_image {
+  height: 80%;
+  width: 60%;
+}
+
+#container_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+#product_btn {
+  padding: 0.5rem;
+}
+#page_btn {
+  font-size: 2rem;
+  margin: 0px 1rem;
+}

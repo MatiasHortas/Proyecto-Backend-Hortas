@@ -5,6 +5,7 @@ import viewsRouter from "./routes/views.router.js";
 import usersRouter from "./routes/users.router.js";
 import products2Router from "./routes/products2.router.js";
 import chatRouter from "./routes/chat.router.js";
+import cookieParser from "cookie-parser";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+app.use(cookieParser("SecretCookie"));
 
 ///handlebarss
 app.engine("handlebars", engine());
@@ -59,4 +61,27 @@ socketServer.on("connection", async (socket) => {
     messages.push(info);
     socketServer.emit("chat", messages);
   });
+});
+
+app.get("/crear", (req, res) => {
+  res
+    .cookie("cookie1", "CamaronDormido", { maxAge: 220000 })
+    .send("probando cookies");
+});
+
+app.get("/crear1", (req, res) => {
+  res
+    .cookie("cookie2", "CookieFirmada", { signed: true })
+    .send("probando cookies 2");
+});
+
+app.get("/leer", (req, res) => {
+  const { cookie1 } = req.cookies;
+  const { cookie2 } = req.signedCookies;
+  res.json({ cookies: cookie1, signedCookies: cookie2 });
+  // res.send(`leyendo cookies: ${cookie1}`);
+});
+
+app.get("/borrar", (req, res) => {
+  res.clearCookie("cookie1").send("cookie eliminada");
 });
