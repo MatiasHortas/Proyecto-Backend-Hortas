@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { products2Manager } from "../managers/products2Manager.js";
+import { productsManager } from "../managers/productsManager.js";
 const router = Router();
 
 router.get("/agg", async (req, res) => {
   try {
-    const product = await products2Manager.findAggre();
+    const product = await productsManager.findAggre();
     res.status(200).json({ message: "Producto", product });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -13,7 +13,7 @@ router.get("/agg", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const product = await products2Manager.findAll(req.query);
+    const product = await productsManager.findAll(req.query);
     res.status(200).json({ message: "Producto", product });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 router.get("/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
   try {
-    const product = await products2Manager.findById(idProduct);
+    const product = await productsManager.findById(idProduct);
     res.status(200).json({ message: "Producto", product });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ message: "Some data is missing" });
   }
   try {
-    const createdProduct = await products2Manager.createOne(req.body);
+    const createdProduct = await productsManager.createOne(req.body);
     res
       .status(200)
       .json({ message: "Product Created", product: createdProduct });
@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
 router.delete("/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
   try {
-    await products2Manager.deleteOne(idProduct);
+    await productsManager.deleteOne(idProduct);
     res.status(200).json({ message: "Product deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -58,10 +58,7 @@ router.delete("/:idProduct", async (req, res) => {
 router.put("/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
   try {
-    const productUpdated = await products2Manager.updateOne(
-      idProduct,
-      req.body
-    );
+    const productUpdated = await productsManager.updateOne(idProduct, req.body);
     res.status(200).json({ message: "Product updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });

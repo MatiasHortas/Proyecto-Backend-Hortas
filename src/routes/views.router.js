@@ -1,19 +1,18 @@
 import { Router } from "express";
-import { manager } from "../ProductsManager.js";
-import { products2Manager } from "../managers/products2Manager.js";
-import { usersManager1 } from "../managers/usersManager.js";
+import { productsManager } from "../managers/productsManager.js";
+import { usersManager } from "../managers/usersManager.js";
 import { cartsManager } from "../managers/cartsManager.js";
 const router = Router();
 
 //ruta handlebars
-router.get("/", async (req, res) => {
-  try {
-    const products = await manager.getProducts({});
-    res.render("home", { response: products });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// router.get("/", async (req, res) => {
+//   try {
+//     const products = await manager.getProducts({});
+//     res.render("home", { response: products });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 router.get("/realtimeproducts", async (req, res) => {
   try {
@@ -25,16 +24,30 @@ router.get("/realtimeproducts", async (req, res) => {
 
 router.get("/products", async (req, res) => {
   try {
-    const products = await products2Manager.findAll(req.query);
-    console.log("products", products);
-    res.render("products", { response: products, style: "product" });
+    let products = await productsManager.findAll(req.query);
+    if (!products) {
+      console.error("No se encontraron productos");
+      return res.status(404).send("No se encontraron productos");
+    }
+    const { info: payload, ...product } = products;
+
+    console.log("que tenemos aca", payload);
+    console.log("y que tenemos aca", product);
+
+    res.render("products", {
+      products: product.results,
+      paginate: payload,
+      style: "product",
+    });
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error al obtener productos:", error);
+    return res.status(500).send("Error interno del servidor");
   }
 });
+
 router.get("/homeuser/:idUser", async (req, res) => {
   const { idUser } = req.params;
-  const user = await usersManager1.findById(idUser);
+  const user = await usersManager.findById(idUser);
   const { first_name, last_name } = user;
   res.render("homeuser", { first_name, last_name });
 });
@@ -46,7 +59,7 @@ router.get("/signup", async (req, res) => {
 router.get("/chat/:idUser", async (req, res) => {
   const { idUser } = req.params;
   try {
-    const user = await usersManager1.findById(idUser);
+    const user = await usersManager.findById(idUser);
     const { first_name, last_name } = user;
     res.render("chat", { first_name, last_name });
   } catch (error) {
@@ -57,17 +70,6 @@ router.get("/chat/:idUser", async (req, res) => {
 router.get("/cookies", async (req, res) => {
   res.render("cookies");
 });
-
-// router.get("/cart/:idCart", async (req, res) => {
-//   try {
-//     const { idCart } = req.params;
-//     const cart = await cartsManager.findById(idCart);
-//     console.log("cart", cart);
-//     res.render("cart", { response: cart });
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// });
 
 router.get("/carts/:idCart", async (req, res) => {
   const { idCart } = req.params;

@@ -1,6 +1,6 @@
 import { productsModel } from "../db/models/products.model.js";
 
-class Products2Manager {
+class ProductsManager {
   async findAggre() {
     const result = await productsModel.aggregate([
       {
@@ -13,8 +13,17 @@ class Products2Manager {
   }
 
   async findAll(obj) {
-    const { limit = 10, page = 1, ...filter } = obj;
-    const result = await productsModel.paginate(filter, { limit, page });
+    const { limit = 10, page = 1, sort = "asc", ...filter } = obj;
+    const sortBy = {
+      def: { title: -1 },
+      asc: { price: 1 },
+      desc: { price: -1 },
+    };
+    const result = await productsModel.paginate(filter, {
+      limit,
+      page,
+      sort: sortBy[sort],
+    });
     const leanResult = result.docs.map((doc) =>
       doc.toObject({ virtuals: true })
     );
@@ -28,10 +37,10 @@ class Products2Manager {
       hasPrevPage: result.prevPage ? true : false,
       hasNextPage: result.nextPage ? true : false,
       prevLink: result.hasPrevPage
-        ? `http://localhost:8080/api/products2?page=${result.prevPage}`
+        ? `http://localhost:8080/api/views/products?page=${result.prevPage}`
         : null,
       nextLink: result.hasNextPage
-        ? `http://localhost:8080/api/products2?page=${result.nextPage}`
+        ? `http://localhost:8080/api/views/products?page=${result.nextPage}`
         : null,
     };
     const results = leanResult;
@@ -60,4 +69,4 @@ class Products2Manager {
   }
 }
 
-export const products2Manager = new Products2Manager();
+export const productsManager = new ProductsManager();

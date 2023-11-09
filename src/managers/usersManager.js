@@ -1,6 +1,6 @@
 import { usersModel } from "../db/models/users.model.js";
 
-class UsersManager1 {
+class UsersManager {
   async findAll() {
     const response = await usersModel.find();
     return response;
@@ -26,4 +26,4 @@ class UsersManager1 {
   }
 }
 
-export const usersManager1 = new UsersManager1();
+export const usersManager = new UsersManager();

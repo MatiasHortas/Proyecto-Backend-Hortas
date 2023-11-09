@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { usersManager1 } from "../managers/usersManager.js";
+import { usersManager } from "../managers/usersManager.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const users = await usersManager1.findAll();
+    const users = await usersManager.findAll();
     res.status(200).json({ message: "Users", users });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 router.get("/idUser", async (req, res) => {
   const { idUser } = req.params;
   try {
-    const users = await usersManager1.findById(idUser);
+    const users = await usersManager.findById(idUser);
     res.status(200).json({ message: "Users", users });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ message: "Some data is missing" });
   }
   try {
-    const createdUser = await usersManager1.createOne(req.body);
+    const createdUser = await usersManager.createOne(req.body);
     res.redirect(`/api/views/chat/${createdUser._id}`);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
 router.delete("/idUser", async (req, res) => {
   const { idUsers } = req.params;
   try {
-    await usersManager1.deleteOne(idUsers);
+    await usersManager.deleteOne(idUsers);
     res.status(200).json({ message: "Usuario deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

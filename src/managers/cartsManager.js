@@ -65,7 +65,7 @@ class CartsManager {
       const productIndex = selectedCart.products.findIndex((p) =>
         p.product.equals(idProduct)
       );
-      console.log(productIndex);
+      console.log("producto", productIndex);
       if (productIndex !== -1) {
         selectedCart.products[productIndex].quantity = quantity;
       } else {
