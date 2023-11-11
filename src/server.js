@@ -4,7 +4,12 @@ import viewsRouter from "./routes/views.router.js";
 import usersRouter from "./routes/users.router.js";
 import productsRouter from "./routes/products.router.js";
 import chatRouter from "./routes/chat.router.js";
+import cookieRouter from "./routes/cookie.router.js";
+import sessionRouter from "./routes/sessions.router.js";
 import cookieParser from "cookie-parser";
+import fileStore from "session-file-store";
+import MongoStore from "connect-mongo";
+import session from "express-session";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
@@ -12,13 +17,37 @@ import { productsManager } from "./managers/productsManager.js";
 
 //db conecction
 import "./db/configDB.js";
+const FileStore = fileStore(session);
 const app = express();
-
+const URI =
+  "mongodb+srv://MatiHortas:matias123@cluster0.h3pwe3e.mongodb.net/ecommerce?retryWrites=true&w=majority";
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(cookieParser("SecretCookie"));
 
+///session
+// // file
+// app.use(
+//   session({
+//     store: new FileStore({ path: __dirname + "/sessions" }),
+//     secret: "secretSession",
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { maxAge: 60000 },
+//   })
+// );
+
+// // mongo
+app.use(
+  session({
+    store: new MongoStore({ mongoUrl: URI }),
+    secret: "secretSession",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 },
+  })
+);
 ///handlebarss
 app.engine("handlebars", engine());
 app.set("views", __dirname + "/views");
@@ -31,7 +60,8 @@ app.use("/api/views", viewsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/chat", chatRouter);
-
+app.use("/api/cookie", cookieRouter);
+app.use("/api/sessions", sessionRouter);
 const httpServer = app.listen(8080, () => {
   console.log("Funciona el puerto amigo");
 });

@@ -1,38 +1,17 @@
-<h2>Crear Tu Usuario</h2>
-<form action="/api/users" method="post">
+<h1>Crear Cuenta</h1>
+
+<form action="/api/sessions/signup" method="post">
   <input
     type="text"
     name="first_name"
     id="first_name"
-    placeholder="Ingresa tu nombre"
-    required
+    placeholder="first name"
   />
-  <input
-    type="text"
-    name="last_name"
-    id="last_name"
-    placeholder="Ingresa tu apellido"
-    required
-  />
-  <input
-    type="mail"
-    name="email"
-    id="email"
-    placeholder="Ingresar mail"
-    required
-  />
-  <input
-    type="password"
-    name="password"
-    id="password"
-    placeholder="Ingresar contrasena"
-  />
-  <input
-    type="number"
-    name="age"
-    id="age"
-    placeholder="Ingresar cuanto a;os tienes"
-  />
-
-  <input type="submit" value="CREAR CUENTA" />
+  <input type="text" name="last_name" id="last_name" placeholder="last name" />
+  <input type="text" name="age" id="age" placeholder="age" />
+  <input type="password" name="password" id="password" placeholder="password" />
+  <input type="email" name="email" id="email" placeholder="Email" />
+  <input type="submit" value="Sign Up" />
 </form>
+
+<button><a href="/api/views/login">LOGIN</a></button>

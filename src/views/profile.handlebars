@@ -1,0 +1,28 @@
+<h1>Bienvenido {{user.first_name}} </h1>
+<h2>Tu email es {{user.email}}</h2>
+<button><a href="/api/sessions/signout">SIGN OUT</a></button>
+
+<div id="products_container">
+
+  {{#each products}}
+    <div id="products_list"><p>Title: {{products}}</p>
+      <p>description: {{description}}</p>
+      <p>stock: {{stock}}</p>
+      <p>price: {{price}}</p>
+      <p>category: {{category}}</p>
+      <p>code: {{code}}</p>
+      <img id="product_image" src="{{thumbnails}}" alt="SinImagen" srcset="" />
+      <button>Agregar al carrito</button>
+    </div>
+  {{/each}}
+
+</div>
+<div id="container_btn">
+  <button id="product_btn"><a
+      href="http://localhost:8080/api/views/profile?limit=5&page={{paginate.prevPage}}"
+    >Prev</a></button>
+  <p id="page_btn">{{paginate.page}}</p>
+  <button id="product_btn"><a
+      href="http://localhost:8080/api/views/profile?limit=5&page={{paginate.nextPage}}"
+    >Next</a></button>
+</div>

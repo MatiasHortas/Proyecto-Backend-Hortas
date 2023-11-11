@@ -45,15 +45,47 @@ router.get("/products", async (req, res) => {
   }
 });
 
-router.get("/homeuser/:idUser", async (req, res) => {
-  const { idUser } = req.params;
-  const user = await usersManager.findById(idUser);
-  const { first_name, last_name } = user;
-  res.render("homeuser", { first_name, last_name });
+router.get("/profile", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect("/api/views/login");
+    }
+
+    const products = await productsManager.findAll(req.query);
+
+    if (!products || !products.results || products.results.length === 0) {
+      console.error("No se encontraron productos");
+      return res.status(404).send("No se encontraron productos");
+    }
+
+    const { info: paginationInfo, results: productResults } = products;
+
+    console.log("Información de paginación:", paginationInfo);
+    console.log("Resultados de productos:", productResults);
+
+    res.render("profile", {
+      user: req.session.user,
+      products: productResults,
+      paginate: paginationInfo,
+      style: "product",
+    });
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    return res.status(500).send("Error interno del servidor");
+  }
 });
 
 router.get("/signup", async (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/api/views/profile");
+  }
   res.render("signup");
+});
+router.get("/login", async (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/api/views/profile");
+  }
+  res.render("login");
 });
 
 router.get("/chat/:idUser", async (req, res) => {
@@ -66,9 +98,17 @@ router.get("/chat/:idUser", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.get("/cookies", async (req, res) => {
   res.render("cookies");
+});
+
+router.post("/cookies", async (req, res) => {
+  const { name, email } = req.body;
+  req.session.name = name;
+  req.session.email = email;
+  res.send("session");
+
+  // res.render("cookies");
 });
 
 router.get("/carts/:idCart", async (req, res) => {
