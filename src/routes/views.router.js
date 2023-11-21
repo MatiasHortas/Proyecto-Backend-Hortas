@@ -46,8 +46,11 @@ router.get("/products", async (req, res) => {
 });
 
 router.get("/profile", async (req, res) => {
+  //   console.log("probando", req);
+  //   res.render("profile", {user: { first_name:"", email:""}})
+  // })
   try {
-    if (!req.session.user) {
+    if (!req.session.passport) {
       return res.redirect("/api/views/login");
     }
 
@@ -59,12 +62,12 @@ router.get("/profile", async (req, res) => {
     }
 
     const { info: paginationInfo, results: productResults } = products;
-
+    const { first_name, email } = req.user;
     console.log("Información de paginación:", paginationInfo);
     console.log("Resultados de productos:", productResults);
 
     res.render("profile", {
-      user: req.session.user,
+      user: { first_name, email },
       products: productResults,
       paginate: paginationInfo,
       style: "product",
@@ -88,6 +91,13 @@ router.get("/login", async (req, res) => {
   res.render("login");
 });
 
+router.get("/restaurar", async (req, res) => {
+  res.render("restaurar");
+});
+
+router.get("/error/", async (req, res) => {
+  res.render("error");
+});
 router.get("/chat/:idUser", async (req, res) => {
   const { idUser } = req.params;
   try {

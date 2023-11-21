@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 import fileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import session from "express-session";
+import "./passport.js";
+import passport from "passport";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
@@ -21,6 +23,24 @@ const FileStore = fileStore(session);
 const app = express();
 const URI =
   "mongodb+srv://MatiHortas:matias123@cluster0.h3pwe3e.mongodb.net/ecommerce?retryWrites=true&w=majority";
+
+// // mongo
+app.use(
+  session({
+    store: new MongoStore({ mongoUrl: URI }),
+    secret: "secretSession",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 },
+  })
+);
+
+// // // passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// // // // .
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -38,16 +58,6 @@ app.use(cookieParser("SecretCookie"));
 //   })
 // );
 
-// // mongo
-app.use(
-  session({
-    store: new MongoStore({ mongoUrl: URI }),
-    secret: "secretSession",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 60000 },
-  })
-);
 ///handlebarss
 app.engine("handlebars", engine());
 app.set("views", __dirname + "/views");

@@ -25,6 +25,10 @@ const usersSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isGithub: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export const usersModel = mongoose.model("Users", usersSchema);
