@@ -2,7 +2,10 @@ import passport from "passport";
 import { usersManager } from "./managers/usersManager.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
 import { hashData, compareData } from "./utils.js";
+const SECRET_KEY_JWT = "secretJWT";
 
 // // local
 passport.use(
@@ -34,16 +37,16 @@ passport.use(
     { usernameField: "email" },
     async (email, password, done) => {
       if (!email || !password) {
-        done(null, false);
+        done(null, false, { message: "All fields are required" });
       }
       try {
         const user = await usersManager.findByEmail(email);
         if (!user) {
-          done(null, false);
+          return done(null, false, { message: "You have to sign up first" });
         }
         const isPasswordValid = await compareData(password, user.password);
         if (!isPasswordValid) {
-          done(null, false);
+          return done(null, false, { message: "Incorrect email or password" });
         }
         // const sessionInfo =
         //   email === "adminCoder@coder.com" && password === "adminCod3r123"
@@ -58,7 +61,7 @@ passport.use(
   )
 );
 
-//github
+// //github
 passport.use(
   "github",
   new GithubStrategy(
@@ -90,6 +93,90 @@ passport.use(
           password: " ",
           email: profile.emails[0].value,
           isGithub: true,
+        };
+        console.log(profile);
+
+        const createUser = await usersManager.createOne(infoUser);
+        done(null, createUser);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+// // // jwt
+const fromCookies = (req) => {
+  return req.cookies.token;
+};
+
+// passport.use(
+//   "current",
+//   new JWTStrategy(
+//     {
+//       jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
+//       secretOrKey: SECRET_KEY_JWT,
+//     },
+//     (jwt_payload, done) => {
+//       console.log(jwt_payload);
+//       done(null, jwt_payload);
+//     }
+//   )
+// );
+
+passport.use(
+  "current",
+  new JWTStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
+      secretOrKey: SECRET_KEY_JWT,
+    },
+    async (jwt_payload, done) => {
+      try {
+        console.log(jwt_payload);
+        const user = await usersManager.findByEmail(jwt_payload.mail);
+        console.log(user);
+        if (!user) {
+          return done(null, false, { message: "Usuario no encontrado" });
+        }
+        return done(null, user);
+      } catch (error) {
+        return error;
+      }
+    }
+  )
+);
+
+// // google
+
+passport.use(
+  "google",
+  new GoogleStrategy(
+    {
+      clientID:
+        "924625436059-qaq75i9qakbaikhrkbofknj0986ggu21.apps.googleusercontent.com",
+      clientSecret: "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",
+      callbackURL: "http://localhost:8080/api/sessions/auth/google/callback",
+    },
+    async function (accessToken, refreshToken, profile, done) {
+      try {
+        console.log(profile);
+
+        const userDB = await usersManager.findByEmail(profile._json.email);
+        console.log("el usuario del db", userDB);
+        if (userDB) {
+          if (userDB.isGoogle) {
+            return done(null, userDB);
+          } else {
+            return done(null, false);
+          }
+        }
+        const userEmail = profile.emails[0].value;
+        const infoUser = {
+          first_name: profile._json.given_name,
+          last_name: profile._json.family_name,
+          password: " ",
+          email: userEmail,
+          isGoogle: true,
         };
         console.log(profile);
 

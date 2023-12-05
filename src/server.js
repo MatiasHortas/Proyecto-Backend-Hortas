@@ -80,13 +80,13 @@ const socketServer = new Server(httpServer);
 const messages = [];
 socketServer.on("connection", async (socket) => {
   console.log(`Cliente conectado ${socket.id}`);
-  const products = await productsManager.getProducts({});
+  const products = await productsManager.findAll({});
   socket.emit("products", products);
 
   socket.on("addProduct", async (productsData) => {
     console.log(productsData);
     await productsManager.addProduct(productsData);
-    const productsUpdated = await productsManager.getProducts({});
+    const productsUpdated = await productsManager.findAll({});
     socket.emit("productsUpdated", productsUpdated);
   });
 

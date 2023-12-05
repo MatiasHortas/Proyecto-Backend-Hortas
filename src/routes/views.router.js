@@ -2,6 +2,9 @@ import { Router } from "express";
 import { productsManager } from "../managers/productsManager.js";
 import { usersManager } from "../managers/usersManager.js";
 import { cartsManager } from "../managers/cartsManager.js";
+import { Cookie } from "express-session";
+import passport from "passport";
+
 const router = Router();
 
 //ruta handlebars
@@ -22,61 +25,88 @@ router.get("/realtimeproducts", async (req, res) => {
   }
 });
 
-router.get("/products", async (req, res) => {
-  try {
-    let products = await productsManager.findAll(req.query);
-    if (!products) {
-      console.error("No se encontraron productos");
-      return res.status(404).send("No se encontraron productos");
-    }
-    const { info: payload, ...product } = products;
+// router.get("/products", async (req, res) => {
+//   try {
+//     let products = await productsManager.findAll(req.query);
+//     if (!products) {
+//       console.error("No se encontraron productos");
+//       return res.status(404).send("No se encontraron productos");
+//     }
+//     const { info: payload, ...product } = products;
 
-    console.log("que tenemos aca", payload);
-    console.log("y que tenemos aca", product);
-
-    res.render("products", {
-      products: product.results,
-      paginate: payload,
-      style: "product",
-    });
-  } catch (error) {
-    console.error("Error al obtener productos:", error);
-    return res.status(500).send("Error interno del servidor");
-  }
-});
-
-router.get("/profile", async (req, res) => {
-  //   console.log("probando", req);
-  //   res.render("profile", {user: { first_name:"", email:""}})
-  // })
-  try {
-    if (!req.session.passport) {
+//     res.render("products", {
+//       products: product.results,
+//       paginate: payload,
+//       style: "product",
+//     });
+//   } catch (error) {
+//     console.error("Error al obtener productos:", error);
+//     return res.status(500).send("Error interno del servidor");
+//   }
+// });
+router.get(
+  "/products",
+  passport.authenticate("current", { session: false }),
+  async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
       return res.redirect("/api/views/login");
     }
 
-    const products = await productsManager.findAll(req.query);
+    try {
+      let products = await productsManager.findAll(req.query);
+      if (!products) {
+        console.error("No se encontraron productos");
+        return res.status(404).send("No se encontraron productos");
+      }
+      const { info: payload, ...product } = products;
 
-    if (!products || !products.results || products.results.length === 0) {
-      console.error("No se encontraron productos");
-      return res.status(404).send("No se encontraron productos");
+      res.render("products", {
+        products: product.results,
+        paginate: payload,
+        style: "product",
+      });
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+      return res.status(500).send("Error interno del servidor");
     }
-
-    const { info: paginationInfo, results: productResults } = products;
-    const { first_name, email } = req.user;
-    console.log("Información de paginación:", paginationInfo);
-    console.log("Resultados de productos:", productResults);
-
-    res.render("profile", {
-      user: { first_name, email },
-      products: productResults,
-      paginate: paginationInfo,
-      style: "product",
-    });
-  } catch (error) {
-    console.error("Error al obtener productos:", error);
-    return res.status(500).send("Error interno del servidor");
   }
-});
+);
+
+router.get(
+  "/profile",
+  passport.authenticate("current", { session: false }),
+  async (req, res) => {
+    console.log("cookiesprofile", req.cookies.token);
+    try {
+      if (!req.session.token) {
+        return res.redirect("/api/views/login");
+      }
+
+      const products = await productsManager.findAll(req.query);
+
+      if (!products || !products.results || products.results.length === 0) {
+        console.error("No se encontraron productos");
+        return res.status(404).send("No se encontraron productos");
+      }
+
+      const { info: paginationInfo, results: productResults } = products;
+      const { first_name, email } = req.user;
+      console.log("Información de paginación:", paginationInfo);
+      console.log("Resultados de productos:", productResults);
+
+      res.render("profile", {
+        user: { first_name, email },
+        products: productResults,
+        paginate: paginationInfo,
+        style: "product",
+      });
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+      return res.status(500).send("Error interno del servidor");
+    }
+  }
+);
 
 router.get("/signup", async (req, res) => {
   if (req.session.user) {
@@ -84,8 +114,11 @@ router.get("/signup", async (req, res) => {
   }
   res.render("signup");
 });
+
 router.get("/login", async (req, res) => {
-  if (req.session.user) {
+  console.log("cookies2", req.cookies.token);
+
+  if (req.cookies.token) {
     return res.redirect("/api/views/profile");
   }
   res.render("login");

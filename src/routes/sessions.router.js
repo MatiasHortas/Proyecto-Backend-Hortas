@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { usersManager } from "../managers/usersManager.js";
-import { hashData, compareData } from "../utils.js";
+import { hashData, compareData, generateToken } from "../utils.js";
 import passport from "passport";
 import { compare } from "bcrypt";
 const router = Router();
@@ -52,6 +52,9 @@ const router = Router();
 //   }
 // });
 
+// // // // jwt
+// const token = generateToken(user)1
+
 // SIGNUP LOGIN PASSPOORT local
 
 router.post(
@@ -61,14 +64,29 @@ router.post(
     failureRedirect: "/api/views/error",
   })
 );
-router.post(
-  "/login",
-  passport.authenticate("login", {
-    successRedirect: "/api/views/profile",
-    failureRedirect: "/api/views/error",
-  })
-);
+
 // SIGNUP LOGIN PASSPOORT GITHUB
+
+router.post("/login", (req, res, next) => {
+  passport.authenticate("login", (err, user) => {
+    console.log("user", user, req.user, req.cookies.token);
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect("/api/views/signup");
+    }
+    const payload = {
+      sub: user._id,
+      name: user.name,
+      mail: user.email,
+      role: user.role,
+    };
+    const token = generateToken(payload);
+    res.cookie("token", token, { maxAge: 30000, httpOnly: true });
+    return res.redirect("/api/views/profile");
+  })(req, res, next);
+});
 
 router.get(
   "/auth/github",
@@ -77,6 +95,22 @@ router.get(
 router.get("/callback", passport.authenticate("github"), (req, res) => {
   res.redirect("/api/views/profile");
 });
+
+// SIGNUP LOGIN PASSPOORT GOOGLE
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/error" }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect("/api/views/profile");
+  }
+);
+// // // // // // .
 router.get("/signout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/api/views/login");
@@ -97,4 +131,13 @@ router.post("/restaurar", async (req, res) => {
     res.status(500).json({ error });
   }
 });
+
+router.get(
+  "/current",
+  passport.authenticate("current", { session: false }),
+  async (req, res) => {
+    res.status(200).json({ message: "Usuario autenticado", user: req.user });
+  }
+);
+
 export default router;
