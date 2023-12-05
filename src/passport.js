@@ -48,11 +48,7 @@ passport.use(
         if (!isPasswordValid) {
           return done(null, false, { message: "Incorrect email or password" });
         }
-        // const sessionInfo =
-        //   email === "adminCoder@coder.com" && password === "adminCod3r123"
-        //     ? { first_name: user.first_name, email, isAdmin: true }
-        //     : { first_name: user.first_name, email, isAdmin: false };
-        // req.session.user = sessionInfo;
+
         done(null, user);
       } catch (error) {
         done(error);
@@ -109,20 +105,6 @@ const fromCookies = (req) => {
   return req.cookies.token;
 };
 
-// passport.use(
-//   "current",
-//   new JWTStrategy(
-//     {
-//       jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
-//       secretOrKey: SECRET_KEY_JWT,
-//     },
-//     (jwt_payload, done) => {
-//       console.log(jwt_payload);
-//       done(null, jwt_payload);
-//     }
-//   )
-// );
-
 passport.use(
   "current",
   new JWTStrategy(
@@ -132,7 +114,7 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        console.log(jwt_payload);
+        console.log("jwtpayload", jwt_payload);
         const user = await usersManager.findByEmail(jwt_payload.mail);
         console.log(user);
         if (!user) {

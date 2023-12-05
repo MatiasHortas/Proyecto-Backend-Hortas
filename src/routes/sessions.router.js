@@ -5,57 +5,48 @@ import passport from "passport";
 import { compare } from "bcrypt";
 const router = Router();
 
-// router.post("/signup", async (req, res) => {
-//   const { first_name, last_name, email, password, age } = req.body;
-//   if (!first_name || !last_name || !email || !password || !age) {
-//     return res.status(400).json({ message: "Faltan datos de ingresar" });
-//   }
-//   try {
-//     const hashedPassword = await hashData(password);
-//     const createdUser = await usersManager.createOne({
-//       ...req.body,
-//       password: hashedPassword,
-//     });
-//     res.status(200).json({ message: "Usuario Creado", user: createdUser });
-//   } catch (error) {
-//     res.status(500).json({ error });
-//   }
-// });
-
-// router.post("/login", async (req, res) => {
-//   const { email, password } = req.body;
-//   if (!email || !password) {
-//     return res.status(400).json({ message: "Faltan datos de ingresar" });
-//   }
-//   try {
-//     const user = await usersManager.findByEmail(email);
-//     if (!user) {
-//       return res.redirect("/api/views/signup");
-//     }
-//     // const isPasswordValid = password === user.password;
-//     const isPasswordValid = await compareData(password, user.password);
-//     if (!isPasswordValid) {
-//       return res.status(401).json({ message: "Password no es valido" });
-//     }
-//     const sessionInfo =
-//       email === "adminCoder@coder.com" && password === "adminCod3r123"
-//         ? { first_name: user.first_name, email, isAdmin: true }
-//         : { first_name: user.first_name, email, isAdmin: false };
-//     req.session.user = sessionInfo;
-//     res.redirect("/api/views/profile");
-//   } catch (error) {
-//     res.status(500).json({
-//       mensaje: "error en el servidor",
-//       error: error.message,
-//       stack: error.stack,
-//     });
-//   }
-// });
-
-// // // // jwt
-// const token = generateToken(user)1
-
 // SIGNUP LOGIN PASSPOORT local
+
+// router.post(
+//   "/login",
+//   passport.authenticate("login", {
+//     failureRedirect: "/api/views/signup",
+//   }),
+//   (req, res) => {
+//     const payload = {
+//       sub: req.user._id,
+//       name: req.user.name,
+//       mail: req.user.email,
+//       role: req.user.role,
+//     };
+//     const token = generateToken(payload);
+
+//     res.cookie("token", token, { maxAge: 30000, httpOnly: true });
+//     return res.redirect("/api/views/profile");
+//   }
+// );
+router.post("/login", (req, res, next) => {
+  passport.authenticate("login", (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect("/api/views/signup");
+    }
+
+    const payload = {
+      sub: user._id,
+      name: user.name,
+      mail: user.email,
+      role: user.role,
+    };
+    const token = generateToken(payload);
+
+    res.cookie("token", token, { maxAge: 30000, httpOnly: true });
+
+    return res.redirect("/api/views/profile");
+  })(req, res, next);
+});
 
 router.post(
   "/signup",
@@ -66,27 +57,6 @@ router.post(
 );
 
 // SIGNUP LOGIN PASSPOORT GITHUB
-
-router.post("/login", (req, res, next) => {
-  passport.authenticate("login", (err, user) => {
-    console.log("user", user, req.user, req.cookies.token);
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.redirect("/api/views/signup");
-    }
-    const payload = {
-      sub: user._id,
-      name: user.name,
-      mail: user.email,
-      role: user.role,
-    };
-    const token = generateToken(payload);
-    res.cookie("token", token, { maxAge: 30000, httpOnly: true });
-    return res.redirect("/api/views/profile");
-  })(req, res, next);
-});
 
 router.get(
   "/auth/github",
@@ -136,7 +106,12 @@ router.get(
   "/current",
   passport.authenticate("current", { session: false }),
   async (req, res) => {
-    res.status(200).json({ message: "Usuario autenticado", user: req.user });
+    try {
+      res.status(200).json({ message: "Usuario autenticado", user: req.user });
+    } catch (error) {
+      console.error("Error al obtener el usuario actual:", error);
+      return res.status(500).send("Error interno del servidor");
+    }
   }
 );
 
