@@ -44,7 +44,7 @@ router.post("/login", (req, res, next) => {
 
     res.cookie("token", token, { maxAge: 30000, httpOnly: true });
 
-    return res.redirect("/api/views/profile");
+    return res.redirect("/api/sessions/current");
   })(req, res, next);
 });
 
