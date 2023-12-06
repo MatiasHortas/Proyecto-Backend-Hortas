@@ -105,8 +105,9 @@ const fromCookies = (req) => {
   return req.cookies.token;
 };
 
+// ...
 passport.use(
-  "current",
+  "jwt",
   new JWTStrategy(
     {
       jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
@@ -114,19 +115,20 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        console.log("jwtpayload", jwt_payload);
-        const user = await usersManager.findByEmail(jwt_payload.mail);
-        console.log(user);
-        if (!user) {
-          return done(null, false, { message: "Usuario no encontrado" });
+        if (jwt_payload.role !== "USER") {
+          return done(null, false, {
+            message: "No tienes permisos para acceder a esta ruta.",
+          });
         }
-        return done(null, user);
+
+        return done(null, jwt_payload);
       } catch (error) {
-        return error;
+        return done(error);
       }
     }
   )
 );
+// ...
 
 // // google
 

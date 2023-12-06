@@ -46,7 +46,7 @@ router.get("/realtimeproducts", async (req, res) => {
 // });
 router.get(
   "/products",
-  passport.authenticate("current", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     const token = req.cookies.token;
     if (!token) {
@@ -75,11 +75,13 @@ router.get(
 
 router.get(
   "/profile",
-  passport.authenticate("current", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     console.log("cookiesprofile", req.cookies.token);
+
     try {
-      if (!req.session.token) {
+      const token = req.cookies.token;
+      if (!token) {
         return res.redirect("/api/views/login");
       }
 
@@ -92,8 +94,8 @@ router.get(
 
       const { info: paginationInfo, results: productResults } = products;
       const { first_name, email } = req.user;
-      console.log("Información de paginación:", paginationInfo);
-      console.log("Resultados de productos:", productResults);
+      // console.log("Información de paginación:", paginationInfo);
+      // console.log("Resultados de productos:", productResults);
 
       res.render("profile", {
         user: { first_name, email },
@@ -179,5 +181,6 @@ router.get("/cart/", async (req, res) => {
     throw new Error(error.message);
   }
 });
+
 //
 export default router;

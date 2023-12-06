@@ -104,15 +104,10 @@ router.post("/restaurar", async (req, res) => {
 
 router.get(
   "/current",
-  passport.authenticate("current", { session: false }),
-  async (req, res) => {
-    try {
-      res.status(200).json({ message: "Usuario autenticado", user: req.user });
-    } catch (error) {
-      console.error("Error al obtener el usuario actual:", error);
-      return res.status(500).send("Error interno del servidor");
-    }
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log("hola", req.user);
+    return res.json({ message: "User information", user: req.user });
   }
 );
-
 export default router;

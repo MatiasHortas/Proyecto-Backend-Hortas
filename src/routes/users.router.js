@@ -15,17 +15,16 @@ router.get("/", async (req, res) => {
 });
 
 router.get(
-  "/idUser",
+  "/:idUser",
   passport.authenticate("jwt", { session: false }),
 
-  async (req, res) => {
+  (req, res) => {
     const { idUser } = req.params;
-    console.log("user", req.user);
     if (req.user.role === "ADMIN") {
       return res.status(403).json({ message: "Not Authorized" });
     }
     try {
-      const users = await usersManager.findById(idUser);
+      const users = usersManager.findById(idUser);
       res.status(200).json({ message: "Users", users });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -45,7 +44,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/idUser", async (req, res) => {
+router.delete("/:idUser", async (req, res) => {
   const { idUsers } = req.params;
   try {
     await usersManager.deleteOne(idUsers);
