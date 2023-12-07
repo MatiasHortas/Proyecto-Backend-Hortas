@@ -27,13 +27,13 @@ const router = Router();
 // );
 router.post("/login", (req, res, next) => {
   passport.authenticate("login", (err, user) => {
+    console.log("Passport JWT Middleware");
     if (err) {
       return next(err);
     }
     if (!user) {
       return res.redirect("/api/views/signup");
     }
-
     const payload = {
       sub: user._id,
       name: user.name,

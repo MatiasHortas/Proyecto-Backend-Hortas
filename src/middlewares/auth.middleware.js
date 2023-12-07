@@ -1,8 +1,11 @@
-export const authMiddleware = (req, res, next) => {
-  // const { user } = req;
-  // if (!user.email === "coderhouse@gmail.com") {
-  //   next();
-  // } else {
-  //   res.send("Not Authorized");
-  // }
+export const authMiddleware = (roles) => {
+  return (req, res, next) => {
+    if (roles.includes("ADMIN")) {
+      return next();
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    next();
+  };
 };

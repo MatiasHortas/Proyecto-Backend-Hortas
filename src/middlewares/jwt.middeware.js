@@ -5,8 +5,10 @@ const SECRET_KEY_JWT = "secretJWT";
 export const jwtValidation = (req, res, next) => {
   try {
     const authHeader = req.get("Authorization");
+    console.log("Authorization Header:", authHeader);
+
     const token = authHeader.split(" ")[1];
-    console.log("authHeader", authHeader);
+    console.log("Token:", token);
     const userToken = jwt.verify(token, SECRET_KEY_JWT);
     req.user = userToken;
     next();

@@ -115,11 +115,11 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        if (jwt_payload.role !== "USER") {
-          return done(null, false, {
-            message: "No tienes permisos para acceder a esta ruta.",
-          });
-        }
+        // if (jwt_payload.role !== "USER") {
+        //   return done(null, false, {
+        //     message: "No tienes permisos para acceder a esta ruta.",
+        //   });
+        // }
 
         return done(null, jwt_payload);
       } catch (error) {

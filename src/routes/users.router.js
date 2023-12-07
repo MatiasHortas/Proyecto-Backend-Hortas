@@ -18,19 +18,20 @@ router.get(
   "/:idUser",
   passport.authenticate("jwt", { session: false }),
 
-  (req, res) => {
+  async (req, res) => {
     const { idUser } = req.params;
     if (req.user.role === "ADMIN") {
       return res.status(403).json({ message: "Not Authorized" });
     }
     try {
-      const users = usersManager.findById(idUser);
+      const users = await usersManager.findById(idUser);
       res.status(200).json({ message: "Users", users });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   }
 );
+
 router.post("/", async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
   if (!first_name || !last_name || !email || !password) {
