@@ -1,4 +1,4 @@
-import { productsModel } from "../db/models/products.model.js";
+import { productsModel } from "../../db/models/products.model.js";
 
 class ProductsManager {
   async findAggre() {
@@ -47,10 +47,6 @@ class ProductsManager {
     return { info, results };
   }
 
-  async findAlls() {
-    const result = await productsModel.find();
-    return result;
-  }
   async findById(id) {
     const result = await productsModel.findById(id);
     return result;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { messagesManager } from "../managers/messagesManager.js";
+import { messagesManager } from "../daos/MongoDB/messagesManager.mongo.js";
 const router = Router();
 
 //ruta handlebars

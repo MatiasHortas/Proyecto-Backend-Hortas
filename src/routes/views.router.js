@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { productsManager } from "../managers/productsManager.js";
-import { usersManager } from "../managers/usersManager.js";
-import { cartsManager } from "../managers/cartsManager.js";
+import { productsManager } from "../daos/MongoDB/productsManager.mongo.js";
+import { usersManager } from "../daos/MongoDB/usersManager.mongo.js";
+
+import { cartsManager } from "../daos/MongoDB/cartsManager.mongo.js";
+
 import { Cookie } from "express-session";
 import passport from "passport";
 

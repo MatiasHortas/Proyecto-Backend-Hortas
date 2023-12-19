@@ -1,5 +1,5 @@
 import passport from "passport";
-import { usersManager } from "./managers/usersManager.js";
+import { usersManager } from "./daos/MongoDB/usersManager.mongo.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";

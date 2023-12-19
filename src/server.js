@@ -15,7 +15,7 @@ import passport from "passport";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
-import { productsManager } from "./managers/productsManager.js";
+import { productsManager } from "../src/daos/MongoDB/productsManager.mongo.js";
 
 //db conecction
 import "./db/configDB.js";
