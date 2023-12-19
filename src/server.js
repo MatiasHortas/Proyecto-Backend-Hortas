@@ -16,14 +16,14 @@ import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import { productsManager } from "../src/daos/MongoDB/productsManager.mongo.js";
-
+import config from "./config/config.js";
 //db conecction
 import "./db/configDB.js";
 const FileStore = fileStore(session);
 const app = express();
-const URI =
-  "mongodb+srv://MatiHortas:matias123@cluster0.h3pwe3e.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
+const URI = config.mongo_uri;
+console.log("uri Server", config.mongo_uri);
 // // mongo
 app.use(
   session({
