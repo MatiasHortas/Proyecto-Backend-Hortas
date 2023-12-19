@@ -18,7 +18,7 @@ import { Server } from "socket.io";
 import { productsManager } from "../src/daos/MongoDB/productsManager.mongo.js";
 import config from "./config/config.js";
 //db conecction
-import "./db/configDB.js";
+import "./daos/db/configDB.js";
 const FileStore = fileStore(session);
 const app = express();
 
