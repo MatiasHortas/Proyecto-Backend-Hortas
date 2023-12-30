@@ -1,10 +1,11 @@
 import passport from "passport";
-import { usersManager } from "./daos/MongoDB/usersManager.mongo.js";
+import { usersManager } from "./DAL/daos/MongoDB/usersManager.mongo.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
 import { hashData, compareData } from "./utils.js";
+import UsersResponse from "./DAL/dtos/users-response.dto.js";
 import config from "../src/config/config.js";
 
 const SECRET_KEY_JWT = config.secret_jwt;
@@ -118,12 +119,6 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        // if (jwt_payload.role !== "USER") {
-        //   return done(null, false, {
-        //     message: "No tienes permisos para acceder a esta ruta.",
-        //   });
-        // }
-
         return done(null, jwt_payload);
       } catch (error) {
         return done(error);
@@ -132,6 +127,31 @@ passport.use(
   )
 );
 // ...
+passport.use(
+  "current",
+  new JWTStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
+      secretOrKey: SECRET_KEY_JWT,
+    },
+
+    async (jwt_payload, done) => {
+      try {
+        const user = await usersManager.findByEmail(jwt_payload.mail);
+
+        console.log(user);
+        if (!user) {
+          return done(null, false, { message: "Usuario no encontrado" });
+        }
+        const userDTO = new UsersResponse(user);
+        return done(null, userDTO);
+      } catch (error) {
+        console.error("Error during JWT verification:", error.message);
+        return done(error); // Llama a done con el error
+      }
+    }
+  )
+);
 
 // // google
 

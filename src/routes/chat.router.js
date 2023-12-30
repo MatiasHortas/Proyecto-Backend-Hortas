@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { messagesManager } from "../daos/MongoDB/messagesManager.mongo.js";
+import { messagesManager } from "../DAL/daos/MongoDB/messagesManager.mongo.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 //ruta handlebars
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware(["USER"]), async (req, res) => {
   try {
     const message = await messagesManager.findAll();
     res.status(200).json({ message: "Mensaje", message });

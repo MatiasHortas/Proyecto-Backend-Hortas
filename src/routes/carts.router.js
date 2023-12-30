@@ -1,6 +1,6 @@
 import { Router } from "express";
 // import { cartsManager } from "../managers/cartsManager.js";
-
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {
   findCartById,
   findAllCart,
@@ -9,18 +9,22 @@ import {
   deleteAllCart,
   updateOneCart,
   addProductToCart,
+  purchaseCart,
 } from "../controllers/cart.controller.js";
 
 const router = Router();
 
-router.post("/", createOneCart);
+router.post("/", authMiddleware(["USER"]), createOneCart);
 router.get("/", findAllCart);
 router.get("/:idCart", findCartById);
-router.post("/:idCart/products/:idProduct", addProductToCart);
+router.get("/:idCart/purchase", purchaseCart);
+router.post(
+  "/:idCart/products/:idProduct",
+  authMiddleware(["USER"]),
+  addProductToCart
+);
 router.delete("/:idCart/products/:idProduct", deleteOneProductCart);
-
 router.delete("/:idCart", deleteAllCart);
-
 router.put("/:idCart/products/:idProduct", updateOneCart);
 // router.get("/:idCart", async (req, res) => {
 //   const { idCart } = req.params;

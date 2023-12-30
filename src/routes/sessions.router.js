@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { usersManager } from "../daos/MongoDB/usersManager.mongo.js";
+import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
 import { hashData, compareData, generateToken } from "../utils.js";
 import passport from "passport";
 import { compare } from "bcrypt";
@@ -26,7 +26,7 @@ const router = Router();
 //   }
 // );
 router.post("/login", (req, res, next) => {
-  passport.authenticate("login", (err, user) => {
+  passport.authenticate("login", { session: false }, (err, user) => {
     console.log("Passport JWT Middleware");
     if (err) {
       return next(err);
@@ -41,8 +41,7 @@ router.post("/login", (req, res, next) => {
       role: user.role,
     };
     const token = generateToken(payload);
-
-    res.cookie("token", token, { maxAge: 30000, httpOnly: true });
+    res.cookie("token", token, { maxAge: 60000, httpOnly: true });
 
     return res.redirect("/api/sessions/current");
   })(req, res, next);
@@ -104,10 +103,12 @@ router.post("/restaurar", async (req, res) => {
 
 router.get(
   "/current",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("current", { session: false }),
   (req, res) => {
     console.log("hola", req.user);
-    return res.json({ message: "User information", user: req.user });
+    return res
+      .status(200)
+      .json({ message: "User information", user: req.user });
   }
 );
 export default router;

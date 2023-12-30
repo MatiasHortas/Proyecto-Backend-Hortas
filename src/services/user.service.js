@@ -1,5 +1,5 @@
-import { usersManager } from "../daos/MongoDB/usersManager.mongo.js";
-
+import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
+import { hashData } from "../utils.js";
 export const findAll = () => {
   const userModific = usersManager.findAll();
   return userModific;

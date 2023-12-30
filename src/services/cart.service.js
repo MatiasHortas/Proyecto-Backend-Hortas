@@ -1,4 +1,4 @@
-import { cartsManager } from "../daos/MongoDB/cartsManager.mongo.js";
+import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
 
 export const findAll = () => {
   const carts = cartsManager.findAll();

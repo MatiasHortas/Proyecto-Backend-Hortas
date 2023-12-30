@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { productsManager } from "../daos/MongoDB/productsManager.mongo.js";
-import { usersManager } from "../daos/MongoDB/usersManager.mongo.js";
+import { productsManager } from "../DAL/daos/MongoDB/productsManager.mongo.js";
+import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
 
-import { cartsManager } from "../daos/MongoDB/cartsManager.mongo.js";
+import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
 
 import { Cookie } from "express-session";
 import passport from "passport";
@@ -174,6 +174,17 @@ router.get("/carts/:idCart", async (req, res) => {
     res.status(500).send("Error interno del servidor");
   }
 });
+
+router.get("/carts/:idCart/purchase", async (req, res) => {
+  try {
+    const { idCart } = req.params;
+    const cart = await cartsManager.findById(idCart);
+    res.render("ticket", { cart: cart, idCart: idCart });
+  } catch (error) {
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
 router.get("/cart/", async (req, res) => {
   try {
     const cart = await cartsManager.findAll();

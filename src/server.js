@@ -4,6 +4,7 @@ import viewsRouter from "./routes/views.router.js";
 import usersRouter from "./routes/users.router.js";
 import productsRouter from "./routes/products.router.js";
 import chatRouter from "./routes/chat.router.js";
+import messagesRouter from "./routes/messages.router.js";
 import cookieRouter from "./routes/cookie.router.js";
 import sessionRouter from "./routes/sessions.router.js";
 import cookieParser from "cookie-parser";
@@ -15,10 +16,10 @@ import passport from "passport";
 import { __dirname } from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
-import { productsManager } from "../src/daos/MongoDB/productsManager.mongo.js";
+import { productsManager } from "../src/DAL/daos/MongoDB/productsManager.mongo.js";
 import config from "./config/config.js";
 //db conecction
-import "./daos/db/configDB.js";
+import "./DAL/daos/db/configDB.js";
 const FileStore = fileStore(session);
 const app = express();
 
@@ -35,17 +36,14 @@ app.use(
   })
 );
 
-// // // passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// // // // .
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
-app.use(cookieParser("SecretCookie"));
+// app.use(cookieParser("SecretCookie"));
 
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cookieParser());
 ///session
 // // file
 // app.use(
@@ -72,6 +70,9 @@ app.use("/api/products", productsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/cookie", cookieRouter);
 app.use("/api/sessions", sessionRouter);
+app.use("/api/messages", messagesRouter);
+
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const httpServer = app.listen(8080, () => {
   console.log("Funciona el puerto amigo");
 });

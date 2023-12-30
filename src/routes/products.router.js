@@ -1,6 +1,6 @@
 import { Router } from "express";
 // import { productsManager } from "../managers/productsManager.js";
-
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {
   findAllProducts,
   findByIdProducts,
@@ -12,9 +12,9 @@ const router = Router();
 
 router.get("/", findAllProducts);
 router.get("/:idProduct", findByIdProducts);
-router.post("/", createOneProduct);
-router.delete("/:idProduct", deletedOneProduct);
-router.put("/:idProduct", updatedProduct);
+router.post("/", authMiddleware(["Admin"]), createOneProduct);
+router.delete("/:idProduct", authMiddleware(["Admin"]), deletedOneProduct);
+router.put("/:idProduct", authMiddleware(["Admin"]), updatedProduct);
 
 // router.get("/agg", async (req, res) => {
 //   try {
