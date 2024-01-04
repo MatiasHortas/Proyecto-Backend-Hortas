@@ -9,6 +9,7 @@ class CartsManager {
     const result = await cartsModel
       .findById(idCart)
       .populate("products.product");
+
     return result;
   }
   async createOne() {

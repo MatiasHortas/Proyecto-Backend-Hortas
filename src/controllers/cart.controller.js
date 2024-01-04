@@ -15,14 +15,33 @@ import jwt from "jsonwebtoken";
 import { createOneT } from "../services/ticket.service.js";
 import config from "../config/config.js";
 import { v4 as uuidv4 } from "uuid";
+// import { CartNotFound, IdNotFound } from "../errors/error.generate.js";
+import { IdNotFound, CartNotFound } from "../errors/error.generate.js";
+import mongoose from "mongoose";
 export const findCartById = async (req, res) => {
   const { idCart } = req.params;
-  const cart = await findById(idCart);
-  res.json({ cart });
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(idCart)) {
+      IdNotFound.generateError();
+    }
+    const cart = await findById(idCart);
+
+    if (!cart) {
+      CartNotFound.generateError();
+    } else {
+      res.json({ cart });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const findAllCart = async (req, res) => {
   const cart = await findAll();
+  if (!cart) {
+    CartNotFound.generateError();
+  }
   res.json({ cart });
 };
 export const addProductToCart = async (req, res) => {
@@ -47,18 +66,23 @@ export const deleteOneProductCart = async (req, res) => {
 
   try {
     const result = await deleteOneProduct(idCart, idProduct);
+
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message, name: error.name });
   }
 };
 export const deleteAllCart = async (req, res) => {
   try {
     const { idCart } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(idCart)) {
+      IdNotFound.generateError();
+    }
     const response = await deleteAll(idCart);
+
     res.status(200).json({ message: "Cart delete", cart: response });
   } catch (error) {
-    res.status(500).json({ message: "Error my friend", error: error });
+    res.status(500).json({ message: error.message, name: error.name });
   }
 };
 export const updateOneCart = async (req, res) => {

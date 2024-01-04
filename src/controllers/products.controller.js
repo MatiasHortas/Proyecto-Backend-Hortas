@@ -5,7 +5,7 @@ import {
   deleteOneProduct,
   updateProduct,
 } from "../services/products.service.js";
-
+import { ProductNotFound, IdNotFound } from "../errors/error.generate.js";
 export const findAllProducts = async (req, res) => {
   try {
     const product = await findAll(req.query);
@@ -18,8 +18,15 @@ export const findAllProducts = async (req, res) => {
 export const findByIdProducts = async (req, res) => {
   const { idProduct } = req.params;
   try {
+    if (!mongoose.Types.ObjectId.isValid(idProduct)) {
+      IdNotFound.generateError();
+    }
     const product = await findById(idProduct);
-    res.status(200).json({ message: "Producto", product });
+    if (!product) {
+      ProductNotFound.generateError();
+    } else {
+      res.status(200).json({ message: "Producto", product });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { productsManager } from "../DAL/daos/MongoDB/productsManager.mongo.js";
 import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
+import { generateProduct } from "../faker.js";
 
 import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
 
@@ -193,6 +194,15 @@ router.get("/cart/", async (req, res) => {
   } catch (error) {
     throw new Error(error.message);
   }
+});
+
+router.get("/mockingProducts", (req, res) => {
+  const products = [];
+  for (let i = 0; i < 100; i++) {
+    const product = generateProduct();
+    products.push(product);
+  }
+  res.render("mockingProducts", { products: products });
 });
 
 //

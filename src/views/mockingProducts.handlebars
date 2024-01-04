@@ -1,0 +1,21 @@
+<header>
+  <h1>
+    LA TIENDA RANDOM
+  </h1>
+</header>
+
+{{#if products.length}}
+  <div class="product-cards">
+    {{#each products}}
+      <div class="product-card">
+        <h4>Titulo: {{title}}</h4>
+        <p>Descripcion: {{description}}</p>
+        <p>Precio: ${{price}}</p>
+
+      </div>
+    {{/each}}
+  </div>
+
+{{else}}
+  <p>No products available.</p>
+{{/if}}

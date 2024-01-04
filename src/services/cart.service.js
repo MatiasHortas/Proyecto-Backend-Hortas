@@ -7,6 +7,7 @@ export const findAll = () => {
 
 export const findById = (id) => {
   const cart = cartsManager.findById(id);
+
   return cart;
 };
 
