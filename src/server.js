@@ -8,6 +8,7 @@ import messagesRouter from "./routes/messages.router.js";
 import cookieRouter from "./routes/cookie.router.js";
 import sessionRouter from "./routes/sessions.router.js";
 import mockingRouter from "./routes/mockingproducts.router.js";
+import loggerRouter from "./routes/logger.router.js";
 import cookieParser from "cookie-parser";
 import fileStore from "session-file-store";
 import MongoStore from "connect-mongo";
@@ -19,6 +20,7 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import { productsManager } from "../src/DAL/daos/MongoDB/productsManager.mongo.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
+import { logger } from "./logger.js";
 import config from "./config/config.js";
 //db conecction
 import "./DAL/daos/db/configDB.js";
@@ -26,7 +28,7 @@ const FileStore = fileStore(session);
 const app = express();
 
 const URI = config.mongo_uri;
-console.log("uri Server", config.mongo_uri);
+logger.info("uri Server", config.mongo_uri);
 // // mongo
 app.use(
   session({
@@ -74,11 +76,12 @@ app.use("/api/cookie", cookieRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/mockingProducts", mockingRouter);
+app.use("/api/loggerTest", loggerRouter);
 
 app.use(errorMiddleware);
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const httpServer = app.listen(8080, () => {
-  console.log("Funciona el puerto amigo");
+  logger.info("Funciona el puerto amigo");
 });
 
 const socketServer = new Server(httpServer);

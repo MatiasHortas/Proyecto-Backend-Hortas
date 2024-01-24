@@ -7,8 +7,8 @@ import {
   deleteOneProduct,
   deleteAll,
 } from "../services/cart.service.js";
-
 import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
+import { logger } from "../logger.js";
 
 import { findById as findByIdProduct } from "../services/products.service.js";
 import jwt from "jsonwebtoken";
@@ -24,6 +24,7 @@ export const findCartById = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(idCart)) {
       IdNotFound.generateError();
+      return;
     }
     const cart = await findById(idCart);
 
@@ -33,16 +34,22 @@ export const findCartById = async (req, res) => {
       res.json({ cart });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    logger.error(error);
+    res.status(500).json({ message: error.message, name: error.name });
   }
 };
 
 export const findAllCart = async (req, res) => {
-  const cart = await findAll();
-  if (!cart) {
-    CartNotFound.generateError();
+  try {
+    const cart = await findAll();
+    if (!cart) {
+      CartNotFound.generateError();
+    }
+    res.json({ cart });
+    logger.info("carrito encontrado", cart);
+  } catch (error) {
+    logger.error(error);
   }
-  res.json({ cart });
 };
 export const addProductToCart = async (req, res) => {
   const { idCart, idProduct } = req.params;
@@ -53,6 +60,7 @@ export const addProductToCart = async (req, res) => {
       .status(200)
       .json({ message: "Producto Agregado al carrito", carrito: cart });
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -69,6 +77,7 @@ export const deleteOneProductCart = async (req, res) => {
 
     res.status(200).json(result);
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ message: error.message, name: error.name });
   }
 };
@@ -82,6 +91,7 @@ export const deleteAllCart = async (req, res) => {
 
     res.status(200).json({ message: "Cart delete", cart: response });
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ message: error.message, name: error.name });
   }
 };
@@ -93,6 +103,7 @@ export const updateOneCart = async (req, res) => {
     console.log(response);
     res.status(200).json({ message: "Cart update", cart: response });
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ message: "Error my friend" });
   }
 };
@@ -140,6 +151,7 @@ export const purchaseCart = async (req, res) => {
       res.status(200).json({ unavailableProducts });
     }
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ message: error.message });
   }
 };
