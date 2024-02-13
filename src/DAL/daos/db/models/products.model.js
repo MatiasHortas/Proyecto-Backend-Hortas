@@ -38,6 +38,10 @@ const productsSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  testFlag: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 productsSchema.plugin(mongoosePaginate);
