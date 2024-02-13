@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
-import { hashData, compareData, generateToken } from "../utils.js";
+import { hashData, compareData, generateToken } from "../utils/utils.js";
 import passport from "passport";
+import jwt from "jsonwebtoken";
+import config from "../config/config.js";
+import { transporter } from "../utils/nodemailers.js";
 import { compare } from "bcrypt";
 const router = Router();
 
@@ -111,4 +114,31 @@ router.get(
       .json({ message: "User information", user: req.user });
   }
 );
+
+router.post("/restaurarviamail", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await usersManager.findByEmail(email);
+
+    if (!user) {
+      return res.redirect("/api/session/signup");
+    }
+    const token = jwt.sign({ email }, config.secret_jwt, { expiresIn: "1h" });
+
+    await transporter.sendMail({
+      from: "matiasagustinhortas@gmail.com",
+      to: email,
+      subject: "Recuperacion de contraseña",
+      html: `<h1>Buenos dias</h1>
+      <b>Para restablecer su contraseña haga clic en el siguiente link </b><br><span> http://localhost:8080/api/views/restaurar?token=${token}</span><br><p>Saludos.</p>`,
+    });
+
+    res.status(200).json({ success: "Mail enviado con éxito" });
+  } catch (error) {
+    console.error("Error al enviar el correo:", error);
+    res.status(500).json({ error: "Hubo un error interno en el servidor." });
+  }
+});
+
 export default router;

@@ -12,9 +12,13 @@ const router = Router();
 
 router.get("/", findAllProducts);
 router.get("/:idProduct", findByIdProducts);
-router.post("/", authMiddleware(["Admin"]), createOneProduct);
-router.delete("/:idProduct", authMiddleware(["Admin"]), deletedOneProduct);
-router.put("/:idProduct", authMiddleware(["Admin"]), updatedProduct);
+router.post("/", authMiddleware(["Admin", "PREMIUM"]), createOneProduct);
+router.delete(
+  "/:idProduct",
+  authMiddleware(["Admin", "PREMIUM"]),
+  deletedOneProduct
+);
+router.put("/:idProduct", authMiddleware(["Admin", "PREMIUM"]), updatedProduct);
 
 // router.get("/agg", async (req, res) => {
 //   try {

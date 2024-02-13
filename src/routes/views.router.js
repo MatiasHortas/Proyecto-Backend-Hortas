@@ -1,10 +1,11 @@
 import { Router } from "express";
+import jwt from "jsonwebtoken";
+
 import { productsManager } from "../DAL/daos/MongoDB/productsManager.mongo.js";
 import { usersManager } from "../DAL/daos/MongoDB/usersManager.mongo.js";
 import { generateProduct } from "../faker.js";
-
 import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
-
+import config from "../config/config.js";
 import { Cookie } from "express-session";
 import passport from "passport";
 
@@ -203,6 +204,11 @@ router.get("/mockingProducts", (req, res) => {
     products.push(product);
   }
   res.render("mockingProducts", { products: products });
+});
+
+router.get("/restaurarviamail", (req, res) => {
+  const token = jwt.sign({}, config.secret_jwt);
+  res.render("restaurarviamail", { token: token });
 });
 
 //

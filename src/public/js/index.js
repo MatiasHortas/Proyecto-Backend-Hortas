@@ -60,3 +60,38 @@ formBorrar.onsubmit = (e) => {
   id = inputBorrar.value;
   socketClient.emit("id", id);
 };
+
+const restaurarviamail = async (paramEmail) => {
+  const token = document.getElementById("token").value;
+  const email = document.getElementById("email").value;
+  const url = `http://localhost:8080/api/session/restaurarviamail`;
+  const data = {
+    email: email,
+  };
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      console.error(
+        "Error al enviar el mail:",
+        response.status,
+        response.statusText
+      );
+      return;
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      form.reset();
+    }
+  } catch (error) {
+    console.error("Fetch error:", error.message);
+  }
+};

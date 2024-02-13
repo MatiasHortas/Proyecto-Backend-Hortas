@@ -15,12 +15,14 @@ import MongoStore from "connect-mongo";
 import session from "express-session";
 import "./passport.js";
 import passport from "passport";
-import { __dirname } from "./utils.js";
+import { __dirname } from "./utils/utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import { productsManager } from "../src/DAL/daos/MongoDB/productsManager.mongo.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
-import { logger } from "./logger.js";
+import { logger } from "./utils/logger.js";
+import { swaggerSetup } from "./utils/swagger.js";
+import swaggerUi from "swagger-ui-express";
 import config from "./config/config.js";
 //db conecction
 import "./DAL/daos/db/configDB.js";
@@ -77,6 +79,7 @@ app.use("/api/sessions", sessionRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/mockingProducts", mockingRouter);
 app.use("/api/loggerTest", loggerRouter);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 app.use(errorMiddleware);
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";

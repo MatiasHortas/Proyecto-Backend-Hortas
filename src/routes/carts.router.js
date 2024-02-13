@@ -14,18 +14,26 @@ import {
 
 const router = Router();
 
-router.post("/", authMiddleware(["USER"]), createOneCart);
+router.post("/", authMiddleware(["USER", "PREMIUM"]), createOneCart);
 router.get("/", findAllCart);
 router.get("/:idCart", findCartById);
 router.get("/:idCart/purchase", purchaseCart);
 router.post(
   "/:idCart/products/:idProduct",
-  authMiddleware(["USER"]),
+  authMiddleware(["USER", "PREMIUM"]),
   addProductToCart
 );
-router.delete("/:idCart/products/:idProduct", deleteOneProductCart);
-router.delete("/:idCart", deleteAllCart);
-router.put("/:idCart/products/:idProduct", updateOneCart);
+router.delete(
+  "/:idCart/products/:idProduct",
+  authMiddleware(["USER", "PREMIUM"]),
+  deleteOneProductCart
+);
+router.delete("/:idCart", authMiddleware(["USER", "PREMIUM"]), deleteAllCart);
+router.put(
+  "/:idCart/products/:idProduct",
+  authMiddleware(["USER", "PREMIUM"]),
+  updateOneCart
+);
 // router.get("/:idCart", async (req, res) => {
 //   const { idCart } = req.params;
 //   const cart = await cartsManager.findById(idCart);

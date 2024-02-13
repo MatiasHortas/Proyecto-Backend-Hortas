@@ -1,0 +1,16 @@
+<h1>Restaurar por mail Password</h1>
+
+<form action="/api/sessions/restaurarviamail" method="post">
+  <input type="email" name="email" id="email" placeholder="Email" />
+  <input type="hidden" name="token" id="token" value="{{token}}" />
+  <button
+    class="boton"
+    id="email"
+    data-mail-id="{{email}}"
+    onclick="restaurarviamail({{email}})"
+  >ENVIAR</button>
+</form>
+
+<button><a href="/api/views/login">LOGIN</a></button>
+
+<script src="../index.js"></script>

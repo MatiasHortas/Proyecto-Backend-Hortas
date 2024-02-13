@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { transporter } from "../nodemailers.js";
+import { transporter } from "../utils/nodemailers.js";
 
 const router = Router();
 

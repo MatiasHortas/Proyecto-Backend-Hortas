@@ -1,9 +1,9 @@
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-export const __dirname = dirname(fileURLToPath(import.meta.url));
-import config from "./config/config.js";
+export const __dirname = join(dirname(fileURLToPath(import.meta.url)), "..");
+import config from "../config/config.js";
 import { logger } from "./logger.js";
 
 const SECRET_KEY_JWT = config.secret_jwt;

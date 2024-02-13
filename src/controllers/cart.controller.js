@@ -8,7 +8,7 @@ import {
   deleteAll,
 } from "../services/cart.service.js";
 import { cartsManager } from "../DAL/daos/MongoDB/cartsManager.mongo.js";
-import { logger } from "../logger.js";
+import { logger } from "../utils/logger.js";
 
 import { findById as findByIdProduct } from "../services/products.service.js";
 import jwt from "jsonwebtoken";

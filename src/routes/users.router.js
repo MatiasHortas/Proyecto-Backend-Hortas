@@ -16,6 +16,7 @@ router.get("/:idUser", findUserByID);
 router.post("/", createUser);
 router.delete("/:idUser", deleteUser);
 router.put("/:idUser", updateOneUser);
+router.put("/premium/:idUser", updateOneUser);
 
 // router.get("/", async (req, res) => {
 //   try {

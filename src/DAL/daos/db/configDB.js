@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { logger } from "../../../logger.js";
+import { logger } from "../../../utils/logger.js";
 
 const URI =
   "mongodb+srv://MatiHortas:matias123@cluster0.h3pwe3e.mongodb.net/ecommerce?retryWrites=true&w=majority";

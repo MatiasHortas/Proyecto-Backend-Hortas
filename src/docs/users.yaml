@@ -1,0 +1,160 @@
+paths:
+  /api/users:
+    get:
+      summary: Get All Users
+      tags:
+        - Users
+      responses:
+        "200":
+          description: All users
+        "500":
+          description: Server error
+    post:
+      summary: Created a user
+      tags:
+        - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+            example:
+              first_name: Matias
+              last_name: Bartil
+              age: 26
+              email: matias@gmail.com
+              password: 32423dsf
+      responses:
+        "200":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                id: 123124fadsff
+                first_name: Matias
+                last_name: Bartil
+                age: 26
+                email: matias@gmail.com
+                password: 32423dsf
+        "400":
+          description: All fields required
+        "500":
+          description: Server error
+  /api/users/{id}:
+    get:
+      summary: Get one user by id
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+      responses:
+        "200":
+          description: One user found
+          content:
+            application/json:
+              schemas:
+                $ref: "#components/schemas/User"
+              example:
+                id: 123124fadsff
+                first_name: Matias
+                last_name: Bartil
+                age: 26
+                email: matias@gmail.com
+                password: 32423dsf
+        "500":
+          description: Server Error
+    put:
+      summary: Update user by id
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+      requestBody:
+        content:
+          application/json:
+            schemas:
+              $ref: "#components/requestBodies/updateUser"
+            example:
+              first_name: Matias
+              last_name: Bartil
+              age: 26
+              email: matias@gmail.com
+              password: 32423dsf
+
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schemas:
+                $ref: "#components/requestBodies/updateUser"
+              example:
+                id: 123124fadsff
+                first_name: Matias
+                last_name: Bartil
+                age: 26
+                email: matias@gmail.com
+                password: 32423dsf
+        "500":
+          description: Server Error
+
+    delete:
+      summary: Delete user by id
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+      responses:
+        "200":
+          description: User deleted
+        "400":
+          description: User not found
+        "500":
+          description: Server error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        age:
+          type: number
+      example:
+        id: 123124fadsff
+        first_name: Matias
+        last_name: Hortas
+        age: 26
+        email: matias@gmail.com
+  requestBodies:
+    updateUser:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        age:
+          type: number
